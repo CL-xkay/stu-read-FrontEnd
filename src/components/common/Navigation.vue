@@ -4,7 +4,7 @@
       自 习 阅 览 室 管 理 系 统
     </span>
     <div class="infoBox" v-show="$store.state.userStatus === 'user'">
-      <Dropdown @on-click="userClick">
+      <Dropdown @on-click="userClick" style="float: right">
         <span>欢迎用户 </span>
         <a>
           <span>{{ name }}</span>
@@ -37,7 +37,7 @@
           </FormItem>
         </Form>
       </Modal>
-      <a>
+      <a style="float: right;margin-left: 15px">
         <Icon type="md-exit" color="white" size="17" />
         <span @click="loginOut">退出</span>
       </a>
@@ -173,7 +173,7 @@ span {
 }
 
 .infoBox {
-  width: 13%;
+  /*width: 13%;*/
   height: 100%;
   margin-right: 1.7%;
   display: flex;

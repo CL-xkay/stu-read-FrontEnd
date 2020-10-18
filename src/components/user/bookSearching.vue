@@ -27,13 +27,19 @@
     </div>
     <!--    <div v-show="data1.length !== 0" style="width: 100%">-->
     <div class="book_table" v-if="data1.length !== 0 && isClick === true" style="width: 100%">
-      <Table max-height="400" :columns="columns1" :data="data1">
+      <Table :columns="columns1" :data="data1">
         <template slot-scope="{ row }" slot="action">
           <Button type="primary" size="small" @click="borrowBook(row)"
             >借阅</Button
           >
         </template>
       </Table>
+      <div style="margin: 10px;overflow: hidden">
+        <div style="float: right;">
+          <Page :total="total" :current="1" :page-size="pageSize" show-total show-elevator show-sizer
+                @on-change="changePage" @on-page-size-change="pageSizeChange"></Page>
+        </div>
+      </div>
     </div>
     <!--    </div>-->
   </div>
@@ -121,23 +127,25 @@ export default {
           width: 75
         }
       ],
+      totalData: [{}],
       data1: [{}],
+      total: 0,
+      pageSize: 10,
       ret: false,
-      isClick:false
+      isClick: false
     };
   },
   methods: {
     search: async function() {
       this.isClick = true;
-      console.log(this.bookValue);
+      // console.log(this.bookValue);
       let flag = (await searchBook(this.type, this.bookValue)).data;
+      // 总的数据条数
+      this.total = flag.data.length;
+      this.totalData = flag.data;
       if (flag.res === 0) {
-        this.data1 = flag.data;
-        if (this.data1.length === 0) {
-          this.ret = true;
-        } else {
-          this.ret = false;
-        }
+        this.data1 = this.totalData.slice(0, this.pageSize);
+        this.ret = this.data1.length === 0;
       }
       if (flag.res === 1) {
         this.$Notice.error({
@@ -147,6 +155,12 @@ export default {
         this.ret = true;
         this.data1.length = 0;
       }
+    },
+    changePage(page) {
+      this.data1 = this.totalData.slice((page - 1) * this.pageSize, page * this.pageSize);
+    },
+    pageSizeChange(pageNum) {
+      this.pageSize = pageNum;
     },
     borrowBook: async function(row) {
       console.log(row.id);
